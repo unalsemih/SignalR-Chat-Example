@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29230.47
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRExample", "SignalRExample\SignalRExample.csproj", "{33F5788F-50E0-4924-9AF4-FC398D81560A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33F5788F-50E0-4924-9AF4-FC398D81560A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33F5788F-50E0-4924-9AF4-FC398D81560A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33F5788F-50E0-4924-9AF4-FC398D81560A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33F5788F-50E0-4924-9AF4-FC398D81560A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47F1484D-B919-4ADB-BBA0-A367ED21B046}
+	EndGlobalSection
+EndGlobal

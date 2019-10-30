@@ -1,0 +1,140 @@
+﻿
+
+
+
+html /*,body*/ {
+    height: 100%;
+}
+
+body {
+    font-family: 'Bree Serif';
+}
+
+
+#leftSide {
+    height: 100%;
+    background-color: #2c3e50;
+}
+
+#closeSideMenu {
+    cursor: pointer;
+    color: #BFC9CA;
+    position: fixed;
+    top: 5px;
+    right: 10px;
+}
+
+#menuBarIcon {
+    display: none;
+    background-color: transparent;
+}
+
+#myAvatar {
+    margin: 10px;
+    width: 70px;
+    left: 15px;
+}
+
+#sendMessage {
+    background-color: #32465a;
+    color: #f5f5f5;
+}
+
+#searchUser {
+    border: 0px;
+    background-color: #32465a;
+    color: #f5f5f5
+}
+
+#users {
+    color: #f5f5f5;
+    overflow-y: scroll;
+    height: calc(100%);
+}
+
+
+#rightSide {
+    height: 100%;
+    background-color: #BFC9CA;
+}
+
+
+#chatMessages {
+    overflow-y: scroll;
+    height: calc(100% - 120px);
+    padding-bottom: 20px;
+}
+
+.chatLeftPhoto {
+    width: 40px;
+    float: left;
+}
+
+.chatRightPhoto {
+    width: 40px;
+    float: right;
+}
+
+.socialMediaLink {
+    margin-left: 10px;
+    font-size: 24px;
+}
+
+#footer {
+    position: fixed;
+    bottom: 0px;
+    padding-top: 7px;
+    background-color: #efefef;
+}
+
+
+@media only screen and (max-width: 767px) {
+    .userContent {
+        display: none;
+    }
+
+    #users {
+        width: 100px;
+    }
+
+    .userList {
+        width: 100px !important;
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+
+    #menuBarIcon {
+        display: inline-block !important;
+    }
+
+    #searchRow, #myStatus, #searchForm, #myAvatar {
+        display: none;
+    }
+
+    #socialIcons {
+        display: none !important;
+    }
+
+    #newMessageForm {
+        width: calc(83% - 80px) !important;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    #rightSide {
+        display: block !important;
+    }
+
+    #searchRow, #myStatus, #searchForm, #myAvatar {
+        display: block !important;
+    }
+
+    .userContent {
+        display: block !important;
+    }
+
+    #menuBarIcon {
+        display: none !important;
+    }
+}
+

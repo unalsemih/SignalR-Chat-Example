@@ -1,0 +1,275 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <meta charset="utf-8" />
+    <link href="~/Content/Site.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <script src="~/Scripts/modernizr-2.8.3.js"></script>
+</head>
+<body>
+    <div class="position-fixed w-100 d-flex flex-column" id="toasts" style="top:0px; left:0px;">
+
+
+    </div>
+    <div id="loginScreen">
+        <div class="form-group">
+            <label class="pl-4 mt-4">Username</label>
+            <div class="col-md-12 text-center">
+                <input type="text" id="username" name="usernameBilgisi" class="form-control col-md-8" placeholder="username">
+                <button id="loginBtn" class="btn btn-success mt-2">Giriş</button>
+            </div>
+
+        </div>
+       
+    </div>
+    <div id="chatScreen" style="display:none;">
+        <h1 style="text-align:center" id="titleName"></h1>
+
+    </div>
+
+    <hr />
+    <div class="container bg-light">
+        <div id="chatMessages" class="row ozel-scrollbar" style="overflow-y: scroll; height:400px; padding-bottom:20px;">
+            <ul id="chatList" class="list-unstyled" style="width:100% !important; display:none;">
+            </ul>
+            <div id="footer" class="col-md-12" style="left:0px;">
+
+                <form id="newMessageForm" class="" style="margin-bottom:7px; padding:0; width :calc(100% - 60px); float:left; padding-right:1em; padding-left:1em;">
+                    <input id="txtMessage" type="text" placeholder="Write something!" name="mesajBilgisi" class="form-control" style="border-radius:2em">
+                </form>
+                <div style="width:60px; float:left; ">
+                    <button class="btn btn-primary" id="btnSend" style="">
+                        Send
+                    </button>
+                </div>
+
+            </div>
+
+
+
+
+        </div>
+    </div>
+
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+
+    <script src="~/Scripts/jquery.signalR-2.4.1.min.js"></script>
+    <script src="/signalr/hubs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            var chat = $.connection.chatHub;
+            var name = "";
+            $("#loginBtn").click(function () {
+                name = $("#username").val();
+                if (name.length > 0) {
+                    $.connection.hub.start(function () {
+                        $("#chatScreen").css("display", "block");
+                        $("#chatList").css("display", "block");
+                        $("#loginScreen").css("display", "none");
+                        chat.server.connect(name);
+                        $("#titleName").html("Hoşgeldiniz " + name);
+
+
+                    });
+                }
+                else
+                    alert("Lütfen kullanıcı adınızı giriniz!");
+            });
+
+
+              // On User DİsConnected
+            chat.client.onUserDisconnected = function (id, name) {
+                //   $('.toast').toast('show');
+                createToast(name, name + " offline oldu","offline");
+                AddUser(chat, id, name);
+            }
+
+
+            // On New User Connected
+            chat.client.onNewUserConnected = function (id, name) {
+                //   $('.toast').toast('show');
+                createToast(name, name + " şuanda online oldu","online");
+                AddUser(chat, id, name);
+            }
+
+            chat.client.onConnected = function (id, userName, allUsers, messages) {
+
+                console.log("id : " + id);
+                console.log("username : " + userName);
+                // setScreen(true);
+
+
+                // Add All Users
+                for (i = 0; i < allUsers.length; i++) {
+                    console.log("girdi");
+                    AddUser(chat, allUsers[i].ConnectionId, allUsers[i].UserName);
+                    //   alert(allUsers[i].UserName);
+                }
+
+                // Add Existing Messages
+                for (i = 0; i < messages.length; i++) {
+
+                    AddMessage(messages[i].UserName, messages[i].Message);
+                }
+
+
+            }
+
+             chat.client.onDisconnected = function (id, userName, allUsers, messages) {
+
+                console.log("id : " + id);
+                console.log("username : " + userName);
+                // setScreen(true);
+
+
+                // Add All Users
+                for (i = 0; i < allUsers.length; i++) {
+                    console.log("girdi");
+                    AddUser(chat, allUsers[i].ConnectionId, allUsers[i].UserName);
+                    //   alert(allUsers[i].UserName);
+                }
+
+                // Add Existing Messages
+                for (i = 0; i < messages.length; i++) {
+
+                    AddMessage(messages[i].UserName, messages[i].Message);
+                }
+
+
+            }
+
+
+
+            chat.client.getMessageOther = function (name, message) {
+                //$("#chatList").append("<li>" + name + " : " + message + "</li>")
+                addMessage(message);
+            }
+
+            chat.client.getMessageCaller = function (message) {
+                myMessageComponent(message);
+                //  $("#chatList").append("<li>" + message + "</li>")
+            }
+
+            $("#btnSend").click(function () {
+                var message = $("#txtMessage").val();
+                chat.server.sendMessage(name, message);
+                $("#txtMessage").val("");
+            });
+
+            function AddUser(chatHub, id, name) {
+
+                var userId = $('#hdId').val();
+
+                var code = "";
+
+                if (userId == id) {
+
+                    code = $('<div class="loginUser">' + name + "</div>");
+
+                }
+                else {
+
+                    code = $('<a id="' + id + '" class="user" >' + name + '<a>');
+
+                    $(code).dblclick(function () {
+
+                        var id = $(this).attr('id');
+
+                        if (userId != id)
+                            OpenPrivateChatWindow(chatHub, id, name);
+
+                    });
+                }
+
+                //   $("#chatList").append("<li class='text-success'>" + name + " online oldu!</li>");
+
+            }
+
+
+            function createToast(name, message,type) {
+                console.log("mesaj oluşturuluyor");
+                var toastDiv = document.createElement("div");
+                //  $(toastDiv).addClass("toast");
+                // $(toastDiv).addClass("toast ml-auto fade show");
+                $(toastDiv).addClass("toast ");
+                $(toastDiv).css({ "position": "relative", "top": "20px", "left": "calc(100% - 300px)", "width": "300px" });
+                $(toastDiv).attr("role", "alert");
+                $(toastDiv).attr("data-delay", "5000");
+                $(toastDiv).attr("data-autohide", "true");
+                console.log(toastDiv);
+                var colorType = "";
+
+                if (type == "online")
+                    colorType = "bg-success";
+                if (type == "offline")
+                    colorType = "bg-danger"; 
+                
+                var toast =
+                    '<div class="toast-header">' +
+                    '<span class="rounded mr-2 ' + colorType + '" style="width:20px; height:20px;"></span>' +
+                    '<strong class="mr-auto">' + name + '</strong>' +
+                    '<small>Now</small>' +
+                    '<button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                    '</div>' +
+                    '<div class="toast-body">' +
+                    ' ' + message + '' +
+                    '</div>';
+             
+                $(toastDiv).append(toast)
+                $("#toasts").append(toastDiv);
+                $(toastDiv).toast('show');
+            }
+
+        });
+
+        function myMessageComponent(message) {
+            var element = '<li class="media" style="padding:10px; padding-right:90px;">' +
+                '<img src="http://emilcarlsson.se/assets/harveyspecter.png" class="rounded-circle img-fluid chatLeftPhoto"' +
+                'alt="...">' +
+                '<div class="media-body">' +
+                '<div style="margin-left:10px;  display: inline-block;  padding:10px; padding-left:13px; border-radius:10px; background-color:#435f7a; color: #f5f5f5;">' +
+                message +
+                '</div>' +
+                '</div>' +
+                '</li>';
+            $("#chatList").append(element);
+            $('#chatMessages').animate({ 
+            scrollTop: $("#chatList").height()
+            }, 500); 
+        }
+
+        function addMessage(message) {
+            var element = '<li class="media my-4" style="margin-top:0px; padding:10px; padding-left:90px; padding-top:0px;">' +
+
+                '<div class="media-body">' +
+                '<div style="margin-right:10px; float:right; display: inline-block; padding:10px;  border-radius:10px 10px 0px 0px; background-color:#f5f5f5; color: #32465a;">' +
+                message +
+                '</div>' +
+                '</div>' +
+                '<img src="http://emilcarlsson.se/assets/harveyspecter.png" class="rounded-circle img-fluid chatRightPhoto" alt="...">' +
+                '</li>';
+            $("#chatList").append(element);
+             $('#chatMessages').animate({ 
+            scrollTop: $("#chatList").height()
+            }, 500);
+        }
+    </script>
+
+</body>
+</html>
