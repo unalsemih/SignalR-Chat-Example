@@ -3,4 +3,4 @@ SignalR teknolojisini kullanarak yapmış olduğum basit bir chat uygulamasıdı
 
 
 
-<img src="SignalRExample/App_Data/img/signalr.gif">
+<img src="SignalRExample/App_Data/img/signalr_Trim.gif">
