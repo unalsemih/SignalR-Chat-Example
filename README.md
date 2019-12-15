@@ -1,6 +1,5 @@
 # SignalR-Chat-Example
-SignalR teknolojisini kullanarak yapmış olduğum basit bir chat uygulamasıdır
 
-
+ChatApp written using SignalR Technology
 
 <img src="SignalRExample/App_Data/img/signalr_Trim.gif">
